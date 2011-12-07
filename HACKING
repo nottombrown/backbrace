@@ -1,0 +1,9 @@
+In order to build Backbrace, you need...
+
+docco (apt-get install node, npm; then npm install docco)
+pygments (easy_install pygments)
+coffeescript
+
+If you don't have pygments, you'll get an "EPIPE, Broken pipe" error
+in node.js.  This is wonderfully unhelpful; just install pygments as
+above and it will go away.

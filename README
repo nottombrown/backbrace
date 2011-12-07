@@ -21,3 +21,6 @@ These are simply the latest versions of each library at the time of
 this writing.  Other recent versions will probably work fine, too.  If
 they don't, please send us a bug report!
 
+Backbrace is distributed under the MIT license, the full text of which
+is available in LICENSE.  In short: use it for anything that makes you
+happy; if it breaks, you get to keep both pieces.
