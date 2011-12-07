@@ -1,0 +1,23 @@
+============
+Backbrace.js
+============
+
+Backbrace provides higher-level functionality on top of Backbone, an
+excellent library that (in its authors' words) "provides structure for
+JavaScript applications."  Backbrace began life as a collection of
+generic pieces we put together while writing the SolidStage web
+frontend.  We're releasing them in the hope that they'll be useful for
+other people, too!
+
+Documentation is available at http://solidstage.github.com/backbrace
+
+This version of Backbrace is intended for use with:
+
+- Backbone 0.5.3
+- Underscore 1.2.3
+- jQuery 1.7.1
+
+These are simply the latest versions of each library at the time of
+this writing.  Other recent versions will probably work fine, too.  If
+they don't, please send us a bug report!
+
