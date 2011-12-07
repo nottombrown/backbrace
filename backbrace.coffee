@@ -1,33 +1,52 @@
-# auto_bind() for Backbone initializers, thanks to
-# http://sulf.me/2011/07/sick-of-backbone-js-_bindall/
-AutoBind =
-  auto_bind: ->
+# Automatically binds `this` for all members of the class, so that you
+# don't have to call `_.bindAll` with a list of all of all of the
+# functions you've defined.  Usually best to call `@autoBind()` first
+# thing in `initialize`.  Thanks to [this blog
+# post](http://sulf.me/2011/07/sick-of-backbone-js-_bindall/).
+autoBind =
+  autoBind: ->
     fns = _.functions(@constructor.prototype)
-    protofns = _.without(
-      ['auto_bind', 'constructor'].concat(
+    prototype_fns = _.without(
+      ['autoBind', 'constructor'].concat(
         _.functions(Backbone.Collection.prototype),
         _.functions(Backbone.Model.prototype),
         _.functions(Backbone.View.prototype)
       ),
-      'render') # /do/ bind render() even though it's in View's prototype
+      # Normally, we ignore functions defined in the Backbone classes.
+      # However, `render()` should be bound because it's always
+      # overridden (the implementation in View is just a useless
+      # stub).
+      'render')
     _.each fns, (f) =>
-#        if f.charAt(0) != '_' && _.indexOf(protofns, f) == -1
-      if _.indexOf(protofns, f) == -1
+      if _.indexOf(prototype_fns, f) == -1
         @[f] = _.bind(@[f], @)
-_.extend(Backbone.Collection.prototype, AutoBind)
-_.extend(Backbone.Model.prototype, AutoBind)
-_.extend(Backbone.View.prototype, AutoBind)
 
-window._.supplement = (obj) ->
+# `autoBind` is available in the prototypes of all Backbone objects.
+_.extend(Backbone.Collection.prototype, autoBind)
+_.extend(Backbone.Model.prototype, autoBind)
+_.extend(Backbone.View.prototype, autoBind)
+
+# Similar to `_.extend`, except that properties are not overridden.
+# Each property winds up with the value provided by the left-most
+# `source` (or the `destination` object itself).
+window._.supplement = (destination) ->
   _.each Array.prototype.slice.call(arguments, 1), (source) ->
     for prop, val of source
-      if val != 0 and !(obj[prop]?)
-        obj[prop] = val
-  return obj
+      if val != 0 and !(destination[prop]?)
+        destination[prop] = val
+  return destination
 
 window.Backbrace = {}
 
-# Based on http://pastie.org/2286356
+# Subset takes a `parent` collection and `filterfn`, a function that
+# maps models in the parent collection to booleans.  It implements the
+# same interface as the Backbone Collection class, and can be used
+# interchangeably.  **Note that you must call `update()` if the
+# results of `filterfn` may have changed.  This will raise the `reset`
+# event.**
+
+# The implementation is loosely based on [this
+# snippet](http://pastie.org/2286356).
 class window.Backbrace.Subset
   models: []
   constructor: (options) ->
@@ -62,9 +81,8 @@ class window.Backbrace.Subset
                 that._reset()
                 that.trigger('remove', a, that)
               else
-#                  that._reset()
                 that.trigger.apply(that, arguments)
-            # New element
+            # The element is new.
             if !that.getByCid(a) and that.filterfn(a)
               that._reset()
               that.trigger('add', a, that)
@@ -109,8 +127,6 @@ class window.Backbrace.Subset
     return @parent.create(model, options)
   parse: (resp) ->
     return resp
-#    length: ->
-#      return @models.length
   chain: ->
     return @parent.chain()
 
@@ -126,16 +142,16 @@ _.each subsetMethods, (method_name) ->
     return _[method_name].apply(_, [@models].concat(_.toArray(arguments)))
 
 
-# Binds to a collection (parent) and a list of model IDs (indices);
-# presents the interface of a collection containing the models whose
-# IDs are listed.  Can also bind to a property of a model.  The only
-# caveat is that changes to the property will trigger a 'reset'
-# event (via Subset.update()) instead of add/remove events.
+# Binds to a collection (`parent`) and a list of model IDs
+# (`indices`); presents the interface of a collection containing the
+# models whose IDs are listed.  Can also bind to a property of a
+# model.  Changes to the property will trigger a `reset` event (via
+# `Subset.update()`) instead of add/remove events.
 class window.Backbrace.IndexedSubset
   models: []
   indices: []
   constructor: (options) ->
-    @auto_bind()
+    @autoBind()
     @parent = options?.parent
     if not (@parent instanceof Backbone.Collection or @parent instanceof Backbrace.Subset)
       throw 'Required option: parent must be a Collection or Subset.'
@@ -172,15 +188,44 @@ class window.Backbrace.IndexedSubset
     return _.filter(@parent.models, (obj) -> return obj.id in that.indices)
 _.supplement(Backbrace.IndexedSubset.prototype, Backbrace.Subset.prototype)
 
-# Binds a Backbone collection to a DataTables table.  The columns
-# should have mDataProp defined and equal to the appropriate model
-# attribute.
+# **Note: This is deprecated, mostly because of how miserable
+# DataTables has made us.  Might be worth dropping me a note before
+# you use it.** Binds a Backbone collection to a DataTables table.
+# The columns should have mDataProp defined and equal to the
+# appropriate model attribute.
+#
+  # Two working examples of table view use.  We have to have the table
+  # created and inserted into its parent before calling dataTable()
+  # since the constructor tries to wrap the element.
+  #
+  #     window.initb = ->
+  #       myel = $('<table></table>')
+  #       $('.content').append(myel)
+  #       foo = new window.TableView
+  #         collection: window.Nodes
+  #         el: myel
+  #         table_options:
+  #           aoColumns: [
+  #             {sTitle: 'NodeA', mDataProp:'id'}
+  #             {sTitle: 'NodeB', mDataProp:'id'}
+  #             {sTitle: 'NodeC', mDataProp:'id'}
+  #           ]
+  #       foo.render()
+  #
+  #     window.initc = ->
+  #       myel = $('<table></table>')
+  #       $('.content').append(myel)
+  #       foo = new window.NodeListView
+  #         el: $('#frazzle')
+  #         collection: window.Nodes
+  #       foo.render()
+
 class window.Backbrace.Tableview extends Backbone.View
   collection: null
   table_options: null
   datatable: null
   initialize: (options) ->
-    @auto_bind()
+    @autoBind()
     @el = $(@el)
     @table_options = options.table_options
     @_table_rows = {}
@@ -211,42 +256,30 @@ class window.Backbrace.Tableview extends Backbone.View
     @datatable.fnUpdate(model.toJSON(), row)
     @trigger('rowchange', row, model.id, @datatable.fnGetNodes(row))
 
-  # Two working examples of table view use.  We have to have the table
-  # created and inserted into its parent before calling dataTable()
-  # since the constructor tries to wrap the element.
-  # window.initb = ->
-  #   myel = $('<table></table>')
-  #   $('.content').append(myel)
-  #   foo = new window.TableView
-  #     collection: window.Nodes
-  #     el: myel
-  #     table_options:
-  #       aoColumns: [
-  #         {sTitle: 'NodeA', mDataProp:'id'}
-  #         {sTitle: 'NodeB', mDataProp:'id'}
-  #         {sTitle: 'NodeC', mDataProp:'id'}
-  #       ]
-  #   foo.render()
-  # window.initc = ->
-  #   myel = $('<table></table>')
-  #   $('.content').append(myel)
-  #   foo = new window.NodeListView
-  #     el: $('#frazzle')
-  #     collection: window.Nodes
-  #   foo.render()
-
+# Takes a `collection` and `itemView`, a class that implements the
+# Backbone View interface.  Renders an instance of `itemView` for each
+# item in the collection.
+#
+# The child views' elements are all given the class *bb-list-item* so
+# that we can remove only those elements when clearing the list.
+#
+# Whenever the collection changes, all child views will be destroyed
+# and recreated.  This isn't normally a problem, but might be if
+# you're doing something paritcularly fancy or have a huge list.
+#
+# For legacy reasons, supports `filter`, an optional argument that
+# maps models to a boolean value indicating whether or not they should
+# be shown in the list.  The new way of doing this is with Subset.
 class window.Backbrace.ListView extends Backbone.View
   collection: null
-  item_view: null
+  itemView: null
   filter: null
   initialize: (options) ->
-    @auto_bind()
+    @autoBind()
     @el = $(@el)
-    @item_view = options.item_view
+    @itemView = options.itemView
     @filter = options.filter ? (model) -> true
 
-#      if !(@item_view instanceof Backbone.View)
-#        throw 'item_view: Must be Backbone.View'
     if !(typeof(@filter) == 'function')
       throw 'filter: Must be function'
     if !(@collection)# instanceof Backbone.Collection)
@@ -256,46 +289,63 @@ class window.Backbrace.ListView extends Backbone.View
     @collection.bind('add', @onCollectionAdd)
     @collection.bind('reset', @onCollectionReset)
     @collection.bind('change', @onCollectionChange)
-
-#      @render()
   onCollectionAdd: (model) ->
     @render()
   onCollectionReset: ->
     @render()
   onCollectionChange: ->
     @render()
-
   render: ->
     @el.children(".bb-list-item").remove()
     _.each(@collection.filter(@filter), @_addItem)
     return this
   _addItem: (model) ->
-    model.view = new @item_view({model: model})
+    model.view = new @itemView({model: model})
     @el.append(model.view.render().el.addClass("bb-list-item"))
 
+# Takes `views`, an object mapping tab IDs to view classes, and
+# `defaultView`, one of those tab IDs.  The `TabPaneView` will create
+# and render an instance of the corresponding view class.  When you
+# call `onTabChange` with a new tab ID, it will destroy the old markup
+# and do the same for the new view.
+#
+# We use this to implement the body of a tabbed view.
 class window.Backbrace.TabPaneView extends Backbone.View
   initialize: (options) ->
-    @auto_bind()
+    @autoBind()
     @el = $('#tabpane')
     @views = options.views
-    if options.default_view?
-      @active_view = new @views[options.default_view]({el: @el})
+    if options.defaultView?
+      @activeView = new @views[options.defaultView]({el: @el})
   onTabChange: (tabid) ->
-    @active_view = new @views[tabid]({el: @el})
+    @activeView = new @views[tabid]({el: @el})
     @render()
   render: ->
     @el.empty()
-    @active_view?.render()
+    @activeView?.render()
     return this
 
+# This implements the actual UI element that lets you change which
+# child view a `TabPaneView` is displaying.  You will probably want to
+# modify this for your own purposes; this one depends heavily on
+# jQuery UI.  (If you're using jQuery UI want a tab bar that looks
+# just like the jQuery UI one, then you're golden.)
+#
+# `TabBarView` expects to be given a list element that contains a
+# `<li>` element for each tab.  The ID of the `<li>` element is used
+# as the corresponding tab ID.
+#
+# Raises the `tabchange` event whenever a new selection is made.
+# Binding this to the `onTabChange` property of a `TabPaneView` will
+# make the two play nicely together.
 class window.Backbrace.TabBarView extends Backbone.View
   initialize: ->
-    @auto_bind()
+    @autoBind()
     @_wrapElement()
     @tabs = {}
     for el in @el.children('li')
       @tabs[el.id] = $(el)
-    @active_tab = @el.children('li').first().attr('id')
+    @activeTab = @el.children('li').first().attr('id')
     @update()
   _wrapElement: ->
     that = this
@@ -307,36 +357,26 @@ class window.Backbrace.TabBarView extends Backbone.View
       $(el).children('a').bind('click', -> that.setTab(el.id))
   update: ->
     @el.children('li').removeClass('ui-tabs-selected ui-state-active')
-    @tabs[@active_tab].addClass('ui-tabs-selected ui-state-active')
+    @tabs[@activeTab].addClass('ui-tabs-selected ui-state-active')
   setTab: (tabid) ->
     if @tabs[tabid]?
-      @active_tab = tabid
+      @activeTab = tabid
       @update()
       @trigger('tabchange', tabid)
   getTab: ->
-    return @active_tab
+    return @activeTab
 
-window.Backbrace.buildTabRouter = (tab_view, tab_pane_view) ->
+# Given an instance of `TabBarView` and an instance of `TabPaneView`,
+# this utility function will construct a Backbone Router for you so
+# that each tab will have a corresponding hash URI.
+window.Backbrace.buildTabRouter = (tabBarView, tabPaneView) ->
   ext = {routes: {}}
-  for tabid, tabview of tab_pane_view.views
+  for tabid, tabview of tabPaneView.views
     ext.routes[tabid] = '_tab_'+tabid
     # TODO: There has to be a cleaner way to do this, but I'm tired
     # and this works.  We have to capture the current value of
     # tabid, or all these functions switch to the last tab.
-    set_tab = (_tabid) -> (-> tab_view.setTab(_tabid))
+    set_tab = (_tabid) -> (-> tabBarView.setTab(_tabid))
     ext['_tab_'+tabid] = set_tab(tabid)
   router = new (Backbone.Router.extend(ext))
   return router
-
-#  window['Backbrace'] =
-#    TableView: TableView
-#    ListView: ListView
-#    TabPaneView: TabPaneView
-#    TabBarView: TabBarView
-#    buildTabRouter: buildTabRouter
-#  _.extend window,
-#    TableView: TableView
-#    ListView: ListView
-#    TabPaneView: TabPaneView
-#    TabBarView: TabBarView
-#    buildTabRouter: buildTabRouter

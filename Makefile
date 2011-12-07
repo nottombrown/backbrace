@@ -1,9 +1,9 @@
-all: backbrace backbrace-min testscript docs
+all: backbrace backbrace-min testscript html-docs
 
 clean:
 	rm backbrace.js test/test.js
 
-backbrace:
+backbrace: backbrace.coffee
 	coffee -c backbrace.coffee
 
 testscript:
@@ -12,5 +12,5 @@ testscript:
 backbrace-min: backbrace
 	echo
 
-docs:
-	echo
+html-docs: backbrace.coffee
+	docco backbrace.coffee

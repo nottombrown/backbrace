@@ -1,5 +1,5 @@
 (function() {
-  var AutoBind, subsetMethods;
+  var autoBind, subsetMethods;
   var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; }, __indexOf = Array.prototype.indexOf || function(item) {
     for (var i = 0, l = this.length; i < l; i++) {
       if (this[i] === item) return i;
@@ -13,32 +13,32 @@
     child.__super__ = parent.prototype;
     return child;
   };
-  AutoBind = {
-    auto_bind: function() {
-      var fns, protofns;
+  autoBind = {
+    autoBind: function() {
+      var fns, prototype_fns;
       fns = _.functions(this.constructor.prototype);
-      protofns = _.without(['auto_bind', 'constructor'].concat(_.functions(Backbone.Collection.prototype), _.functions(Backbone.Model.prototype), _.functions(Backbone.View.prototype)), 'render');
+      prototype_fns = _.without(['autoBind', 'constructor'].concat(_.functions(Backbone.Collection.prototype), _.functions(Backbone.Model.prototype), _.functions(Backbone.View.prototype)), 'render');
       return _.each(fns, __bind(function(f) {
-        if (_.indexOf(protofns, f) === -1) {
+        if (_.indexOf(prototype_fns, f) === -1) {
           return this[f] = _.bind(this[f], this);
         }
       }, this));
     }
   };
-  _.extend(Backbone.Collection.prototype, AutoBind);
-  _.extend(Backbone.Model.prototype, AutoBind);
-  _.extend(Backbone.View.prototype, AutoBind);
-  window._.supplement = function(obj) {
+  _.extend(Backbone.Collection.prototype, autoBind);
+  _.extend(Backbone.Model.prototype, autoBind);
+  _.extend(Backbone.View.prototype, autoBind);
+  window._.supplement = function(destination) {
     _.each(Array.prototype.slice.call(arguments, 1), function(source) {
       var prop, val, _results;
       _results = [];
       for (prop in source) {
         val = source[prop];
-        _results.push(val !== 0 && !(obj[prop] != null) ? obj[prop] = val : void 0);
+        _results.push(val !== 0 && !(destination[prop] != null) ? destination[prop] = val : void 0);
       }
       return _results;
     });
-    return obj;
+    return destination;
   };
   window.Backbrace = {};
   window.Backbrace.Subset = (function() {
@@ -168,7 +168,7 @@
     IndexedSubset.prototype.models = [];
     IndexedSubset.prototype.indices = [];
     function IndexedSubset(options) {
-      this.auto_bind();
+      this.autoBind();
       this.parent = options != null ? options.parent : void 0;
       if (!(this.parent instanceof Backbone.Collection || this.parent instanceof Backbrace.Subset)) {
         throw 'Required option: parent must be a Collection or Subset.';
@@ -226,7 +226,7 @@
     Tableview.prototype.table_options = null;
     Tableview.prototype.datatable = null;
     Tableview.prototype.initialize = function(options) {
-      this.auto_bind();
+      this.autoBind();
       this.el = $(this.el);
       this.table_options = options.table_options;
       this._table_rows = {};
@@ -274,13 +274,13 @@
       ListView.__super__.constructor.apply(this, arguments);
     }
     ListView.prototype.collection = null;
-    ListView.prototype.item_view = null;
+    ListView.prototype.itemView = null;
     ListView.prototype.filter = null;
     ListView.prototype.initialize = function(options) {
       var _ref;
-      this.auto_bind();
+      this.autoBind();
       this.el = $(this.el);
-      this.item_view = options.item_view;
+      this.itemView = options.itemView;
       this.filter = (_ref = options.filter) != null ? _ref : function(model) {
         return true;
       };
@@ -310,7 +310,7 @@
       return this;
     };
     ListView.prototype._addItem = function(model) {
-      model.view = new this.item_view({
+      model.view = new this.itemView({
         model: model
       });
       return this.el.append(model.view.render().el.addClass("bb-list-item"));
@@ -323,17 +323,17 @@
       TabPaneView.__super__.constructor.apply(this, arguments);
     }
     TabPaneView.prototype.initialize = function(options) {
-      this.auto_bind();
+      this.autoBind();
       this.el = $('#tabpane');
       this.views = options.views;
-      if (options.default_view != null) {
-        return this.active_view = new this.views[options.default_view]({
+      if (options.defaultView != null) {
+        return this.activeView = new this.views[options.defaultView]({
           el: this.el
         });
       }
     };
     TabPaneView.prototype.onTabChange = function(tabid) {
-      this.active_view = new this.views[tabid]({
+      this.activeView = new this.views[tabid]({
         el: this.el
       });
       return this.render();
@@ -341,7 +341,7 @@
     TabPaneView.prototype.render = function() {
       var _ref;
       this.el.empty();
-      if ((_ref = this.active_view) != null) {
+      if ((_ref = this.activeView) != null) {
         _ref.render();
       }
       return this;
@@ -355,7 +355,7 @@
     }
     TabBarView.prototype.initialize = function() {
       var el, _i, _len, _ref;
-      this.auto_bind();
+      this.autoBind();
       this._wrapElement();
       this.tabs = {};
       _ref = this.el.children('li');
@@ -363,7 +363,7 @@
         el = _ref[_i];
         this.tabs[el.id] = $(el);
       }
-      this.active_tab = this.el.children('li').first().attr('id');
+      this.activeTab = this.el.children('li').first().attr('id');
       return this.update();
     };
     TabBarView.prototype._wrapElement = function() {
@@ -381,32 +381,32 @@
     };
     TabBarView.prototype.update = function() {
       this.el.children('li').removeClass('ui-tabs-selected ui-state-active');
-      return this.tabs[this.active_tab].addClass('ui-tabs-selected ui-state-active');
+      return this.tabs[this.activeTab].addClass('ui-tabs-selected ui-state-active');
     };
     TabBarView.prototype.setTab = function(tabid) {
       if (this.tabs[tabid] != null) {
-        this.active_tab = tabid;
+        this.activeTab = tabid;
         this.update();
         return this.trigger('tabchange', tabid);
       }
     };
     TabBarView.prototype.getTab = function() {
-      return this.active_tab;
+      return this.activeTab;
     };
     return TabBarView;
   })();
-  window.Backbrace.buildTabRouter = function(tab_view, tab_pane_view) {
+  window.Backbrace.buildTabRouter = function(tabBarView, tabPaneView) {
     var ext, router, set_tab, tabid, tabview, _ref;
     ext = {
       routes: {}
     };
-    _ref = tab_pane_view.views;
+    _ref = tabPaneView.views;
     for (tabid in _ref) {
       tabview = _ref[tabid];
       ext.routes[tabid] = '_tab_' + tabid;
       set_tab = function(_tabid) {
         return function() {
-          return tab_view.setTab(_tabid);
+          return tabBarView.setTab(_tabid);
         };
       };
       ext['_tab_' + tabid] = set_tab(tabid);
