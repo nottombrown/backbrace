@@ -10,7 +10,7 @@ testscript:
 	coffee -c test/test.coffee
 
 backbrace-min: backbrace
-	echo
+	closure-compiler --js backbrace.js --js_output_file backbrace.min.js
 
 html-docs: backbrace.coffee
 	docco backbrace.coffee
