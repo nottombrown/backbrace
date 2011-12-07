@@ -1,8 +1,4 @@
 $ ->
-
-  test 'simple', ->
-    ok(true, 'test fine')
-
   module 'Subset'
 
   build_fixture = ->
