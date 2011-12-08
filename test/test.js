@@ -1,9 +1,6 @@
 (function() {
   $(function() {
     var build_fixture;
-    test('simple', function() {
-      return ok(true, 'test fine');
-    });
     module('Subset');
     build_fixture = function() {
       var BaseSet, TestSubset;

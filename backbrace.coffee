@@ -301,7 +301,7 @@ class window.Backbrace.ListView extends Backbone.View
     return this
   _addItem: (model) ->
     model.view = new @itemView({model: model})
-    @el.append(model.view.render().el.addClass("bb-list-item"))
+    @el.append($(model.view.render().el).addClass("bb-list-item"))
 
 # Takes `views`, an object mapping tab IDs to view classes, and
 # `defaultView`, one of those tab IDs.  The `TabPaneView` will create

@@ -1,4 +1,4 @@
-all: backbrace backbrace-min testscript html-docs
+all: backbrace backbrace-min testscript html-docs example-js
 
 clean:
 	rm backbrace.js test/test.js
@@ -14,3 +14,6 @@ backbrace-min: backbrace
 
 html-docs: backbrace.coffee
 	docco backbrace.coffee
+
+example-js:
+	coffee -c examples/*.coffee

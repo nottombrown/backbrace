@@ -313,7 +313,7 @@
       model.view = new this.itemView({
         model: model
       });
-      return this.el.append(model.view.render().el.addClass("bb-list-item"));
+      return this.el.append($(model.view.render().el).addClass("bb-list-item"));
     };
     return ListView;
   })();
