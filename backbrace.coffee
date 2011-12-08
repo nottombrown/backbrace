@@ -55,7 +55,7 @@ class window.Backbrace.Subset
     if not (@parent instanceof Backbone.Collection or @parent instanceof Backbrace.Subset)
       throw 'Required option: parent must be a Collection or Subset.'
     if typeof @filterfn != 'function'
-      throw 'Required option: filter must be function mapping Model to boolean.'
+      throw 'Required option: filterfn must be function mapping Model to boolean.'
 
     @options = options
     delete @options.parent
@@ -64,28 +64,27 @@ class window.Backbrace.Subset
     @_reset()
     @initialize(@options)
   _bind: ->
-    that = this
-    @parent.bind 'all', (evt) ->
+    @parent.bind 'all', (evt) =>
       a = arguments[1]
       switch evt
         when 'add', 'remove'
-          if that.filterfn(a)
-            that.trigger.apply(that, arguments)
-            that._reset()
+          if @filterfn(a)
+            @_reset()
+            @trigger.apply(this, arguments)
         when 'refresh'
-          that._reset()
+          @_reset()
         else
           if evt.indexOf('change') == 0
-            if that.getByCid(a)
-              if !that.filterfn(a)
-                that._reset()
-                that.trigger('remove', a, that)
+            if @getByCid(a)
+              if !@filterfn(a)
+                @_reset()
+                @trigger('remove', a, this)
               else
-                that.trigger.apply(that, arguments)
+                @trigger.apply(this, arguments)
             # The element is new.
-            if !that.getByCid(a) and that.filterfn(a)
-              that._reset()
-              that.trigger('add', a, that)
+            if !@getByCid(a) and this.filterfn(a)
+              @_reset()
+              @trigger('add', a, this)
     @_boundOnModelEvent = _.bind(@_onModelEvent, this)
   initialize: (options) ->
   _reset: ->
@@ -313,7 +312,7 @@ class window.Backbrace.ListView extends Backbone.View
 class window.Backbrace.TabPaneView extends Backbone.View
   initialize: (options) ->
     @autoBind()
-    @el = $('#tabpane')
+    @el = $(@el)
     @views = options.views
     if options.defaultView?
       @activeView = new @views[options.defaultView]({el: @el})
@@ -349,12 +348,12 @@ class window.Backbrace.TabBarView extends Backbone.View
     @update()
   _wrapElement: ->
     that = this
-    @el = $('.tabs').addClass('ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all')
+    @el.addClass('ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all')
     @el.children('li').addClass('ui-state-default ui-corner-top')
     @el.wrap('<div class="ui-tabs ui-widget" />')
     @el.children('li').each (i, el) ->
       $(el).html('<a>'+$(el).text()+'</a>')
-      $(el).children('a').bind('click', -> that.setTab(el.id))
+      $(el).children('a').click -> that.setTab(el.id)
   update: ->
     @el.children('li').removeClass('ui-tabs-selected ui-state-active')
     @tabs[@activeTab].addClass('ui-tabs-selected ui-state-active')

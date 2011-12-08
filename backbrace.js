@@ -50,7 +50,7 @@
         throw 'Required option: parent must be a Collection or Subset.';
       }
       if (typeof this.filterfn !== 'function') {
-        throw 'Required option: filter must be function mapping Model to boolean.';
+        throw 'Required option: filterfn must be function mapping Model to boolean.';
       }
       this.options = options;
       delete this.options.parent;
@@ -60,38 +60,36 @@
       this.initialize(this.options);
     }
     Subset.prototype._bind = function() {
-      var that;
-      that = this;
-      this.parent.bind('all', function(evt) {
+      this.parent.bind('all', __bind(function(evt) {
         var a;
         a = arguments[1];
         switch (evt) {
           case 'add':
           case 'remove':
-            if (that.filterfn(a)) {
-              that.trigger.apply(that, arguments);
-              return that._reset();
+            if (this.filterfn(a)) {
+              this._reset();
+              return this.trigger.apply(this, arguments);
             }
             break;
           case 'refresh':
-            return that._reset();
+            return this._reset();
           default:
             if (evt.indexOf('change') === 0) {
-              if (that.getByCid(a)) {
-                if (!that.filterfn(a)) {
-                  that._reset();
-                  that.trigger('remove', a, that);
+              if (this.getByCid(a)) {
+                if (!this.filterfn(a)) {
+                  this._reset();
+                  this.trigger('remove', a, this);
                 } else {
-                  that.trigger.apply(that, arguments);
+                  this.trigger.apply(this, arguments);
                 }
               }
-              if (!that.getByCid(a) && that.filterfn(a)) {
-                that._reset();
-                return that.trigger('add', a, that);
+              if (!this.getByCid(a) && this.filterfn(a)) {
+                this._reset();
+                return this.trigger('add', a, this);
               }
             }
         }
-      });
+      }, this));
       return this._boundOnModelEvent = _.bind(this._onModelEvent, this);
     };
     Subset.prototype.initialize = function(options) {};
@@ -324,7 +322,7 @@
     }
     TabPaneView.prototype.initialize = function(options) {
       this.autoBind();
-      this.el = $('#tabpane');
+      this.el = $(this.el);
       this.views = options.views;
       if (options.defaultView != null) {
         return this.activeView = new this.views[options.defaultView]({
@@ -369,12 +367,12 @@
     TabBarView.prototype._wrapElement = function() {
       var that;
       that = this;
-      this.el = $('.tabs').addClass('ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all');
+      this.el.addClass('ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all');
       this.el.children('li').addClass('ui-state-default ui-corner-top');
       this.el.wrap('<div class="ui-tabs ui-widget" />');
       return this.el.children('li').each(function(i, el) {
         $(el).html('<a>' + $(el).text() + '</a>');
-        return $(el).children('a').bind('click', function() {
+        return $(el).children('a').click(function() {
           return that.setTab(el.id);
         });
       });
