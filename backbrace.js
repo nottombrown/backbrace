@@ -394,20 +394,20 @@
     return TabBarView;
   })();
   window.Backbrace.buildTabRouter = function(tabBarView, tabPaneView) {
-    var ext, router, set_tab, tabid, tabview, _ref;
+    var ext, router, tabid, tabview, _fn, _ref;
     ext = {
       routes: {}
     };
     _ref = tabPaneView.views;
+    _fn = function(tabid) {
+      return ext['_tab_' + tabid] = function() {
+        return tabBarView.setTab(tabid);
+      };
+    };
     for (tabid in _ref) {
       tabview = _ref[tabid];
       ext.routes[tabid] = '_tab_' + tabid;
-      set_tab = function(_tabid) {
-        return function() {
-          return tabBarView.setTab(_tabid);
-        };
-      };
-      ext['_tab_' + tabid] = set_tab(tabid);
+      _fn(tabid);
     }
     router = new (Backbone.Router.extend(ext));
     return router;

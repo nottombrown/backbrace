@@ -372,10 +372,8 @@ window.Backbrace.buildTabRouter = (tabBarView, tabPaneView) ->
   ext = {routes: {}}
   for tabid, tabview of tabPaneView.views
     ext.routes[tabid] = '_tab_'+tabid
-    # TODO: There has to be a cleaner way to do this, but I'm tired
-    # and this works.  We have to capture the current value of
-    # tabid, or all these functions switch to the last tab.
-    set_tab = (_tabid) -> (-> tabBarView.setTab(_tabid))
-    ext['_tab_'+tabid] = set_tab(tabid)
+    do (tabid) ->
+      ext['_tab_'+tabid] = -> 
+        tabBarView.setTab(tabid)
   router = new (Backbone.Router.extend(ext))
   return router
