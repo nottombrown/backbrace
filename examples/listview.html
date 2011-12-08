@@ -1,0 +1,20 @@
+<html>
+
+<head>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.15/jquery-ui.min.js"></script>
+  <script type="text/javascript" src="../vendor/underscore.js"></script>
+  <script type="text/javascript" src="../vendor/backbone.js"></script>
+  <script type="text/javascript" src="../vendor/backbone.nostorage.js"></script>
+  <script type="text/javascript" src="../backbrace.js"></script>
+
+  <script type="text/javascript" src="listview.js"></script>
+</head>
+<body>
+  <h2>The Widget Factory</h2>
+  <div id="widget-list"></div>
+
+  <script type="text/template" id="tpl-item-view">
+	<strong><%= name %></strong> <em>weighs <%= weight %> lbs.</em>
+  </script>
+</html>
