@@ -162,8 +162,8 @@
       return _[method_name].apply(_, [this.models].concat(_.toArray(arguments)));
     };
   });
-  window.Backbone.IndexedSubset = (function() {
-    __extends(IndexedSubset, Backbone.Subset);
+  window.Backbrace.IndexedSubset = (function() {
+    __extends(IndexedSubset, Backbrace.Subset);
     function IndexedSubset(options) {
       this.autoBind();
       this.parent = options != null ? options.parent : void 0;
@@ -201,15 +201,15 @@
     };
     return IndexedSubset;
   })();
-  window.Backbrace.Tableview = (function() {
-    __extends(Tableview, Backbone.View);
-    function Tableview() {
-      Tableview.__super__.constructor.apply(this, arguments);
+  window.Backbrace.TableView = (function() {
+    __extends(TableView, Backbone.View);
+    function TableView() {
+      TableView.__super__.constructor.apply(this, arguments);
     }
-    Tableview.prototype.collection = null;
-    Tableview.prototype.table_options = null;
-    Tableview.prototype.datatable = null;
-    Tableview.prototype.initialize = function(options) {
+    TableView.prototype.collection = null;
+    TableView.prototype.table_options = null;
+    TableView.prototype.datatable = null;
+    TableView.prototype.initialize = function(options) {
       this.autoBind();
       this.el = $(this.el);
       this.table_options = options.table_options;
@@ -219,21 +219,21 @@
       this.collection.bind('reset', this.repopulate);
       return this.collection.bind('change', this._updateItem);
     };
-    Tableview.prototype.render = function() {
+    TableView.prototype.render = function() {
       this.datatable = this.el.dataTable(this.table_options);
       this.repopulate();
       return this;
     };
-    Tableview.prototype.repopulate = function() {
+    TableView.prototype.repopulate = function() {
       this.datatable.fnClearTable();
       return this.collection.each(this._addItem);
     };
-    Tableview.prototype._addItem = function(model) {
+    TableView.prototype._addItem = function(model) {
       var row;
       row = this.datatable.fnAddData(model.toJSON())[0];
       return this._table_rows[model.id] = row;
     };
-    Tableview.prototype._removeItem = function(model) {
+    TableView.prototype._removeItem = function(model) {
       var row;
       row = this._table_rows[model.id];
       if (!(row != null)) {
@@ -241,7 +241,7 @@
       }
       return this.datatable.fnDeleteRow(row);
     };
-    Tableview.prototype._updateItem = function(model) {
+    TableView.prototype._updateItem = function(model) {
       var row;
       row = this._table_rows[model.id];
       if (!(row != null)) {
@@ -250,7 +250,7 @@
       this.datatable.fnUpdate(model.toJSON(), row);
       return this.trigger('rowchange', row, model.id, this.datatable.fnGetNodes(row));
     };
-    return Tableview;
+    return TableView;
   })();
   window.Backbrace.ListView = (function() {
     __extends(ListView, Backbone.View);

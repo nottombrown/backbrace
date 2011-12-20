@@ -146,7 +146,7 @@ _.each subsetMethods, (method_name) ->
 # models whose IDs are listed.  Can also bind to a property of a
 # model.  Changes to the property will trigger a `reset` event (via
 # `Subset.update()`) instead of add/remove events.
-class window.Backbone.IndexedSubset extends Backbone.Subset
+class window.Backbrace.IndexedSubset extends Backbrace.Subset
   constructor: (options) ->
     @autoBind()
     @parent = options?.parent
@@ -172,7 +172,7 @@ class window.Backbone.IndexedSubset extends Backbone.Subset
   _models: ->
     return @parent.filter (obj) => return obj.id in @indices
 
-class window.Backbrace.Tableview extends Backbone.View
+class window.Backbrace.TableView extends Backbone.View
   collection: null
   table_options: null
   datatable: null

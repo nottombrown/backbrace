@@ -124,7 +124,7 @@ event.  Should be called if the filter is modified.</p>             </td>       
 (<code>indices</code>); presents the interface of a collection containing the
 models whose IDs are listed.  Can also bind to a property of a
 model.  Changes to the property will trigger a <code>reset</code> event (via
-<code>Subset.update()</code>) instead of add/remove events.</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="k">class</span> <span class="nb">window</span><span class="p">.</span><span class="nx">Backbone</span><span class="p">.</span><span class="nx">IndexedSubset</span> <span class="k">extends</span> <span class="nx">Backbone</span><span class="p">.</span><span class="nx">Subset</span>
+<code>Subset.update()</code>) instead of add/remove events.</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="k">class</span> <span class="nb">window</span><span class="p">.</span><span class="nx">Backbrace</span><span class="p">.</span><span class="nx">IndexedSubset</span> <span class="k">extends</span> <span class="nx">Backbrace</span><span class="p">.</span><span class="nx">Subset</span>
   <span class="nv">constructor: </span><span class="nf">(options) -&gt;</span>
     <span class="nx">@autoBind</span><span class="p">()</span>
     <span class="vi">@parent = </span><span class="nx">options</span><span class="o">?</span><span class="p">.</span><span class="nx">parent</span>
@@ -150,7 +150,7 @@ model.  Changes to the property will trigger a <code>reset</code> event (via
   <span class="nv">_models: </span><span class="o">-&gt;</span>
     <span class="k">return</span> <span class="nx">@parent</span><span class="p">.</span><span class="nx">filter</span> <span class="p">(</span><span class="nx">obj</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="k">return</span> <span class="nx">obj</span><span class="p">.</span><span class="nx">id</span> <span class="k">in</span> <span class="nx">@indices</span>
 
-<span class="k">class</span> <span class="nb">window</span><span class="p">.</span><span class="nx">Backbrace</span><span class="p">.</span><span class="nx">Tableview</span> <span class="k">extends</span> <span class="nx">Backbone</span><span class="p">.</span><span class="nx">View</span>
+<span class="k">class</span> <span class="nb">window</span><span class="p">.</span><span class="nx">Backbrace</span><span class="p">.</span><span class="nx">TableView</span> <span class="k">extends</span> <span class="nx">Backbone</span><span class="p">.</span><span class="nx">View</span>
   <span class="nv">collection: </span><span class="kc">null</span>
   <span class="nv">table_options: </span><span class="kc">null</span>
   <span class="nv">datatable: </span><span class="kc">null</span>
