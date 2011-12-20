@@ -146,78 +146,31 @@ _.each subsetMethods, (method_name) ->
 # models whose IDs are listed.  Can also bind to a property of a
 # model.  Changes to the property will trigger a `reset` event (via
 # `Subset.update()`) instead of add/remove events.
-class window.Backbrace.IndexedSubset
-  models: []
-  indices: []
+class window.Backbone.IndexedSubset extends Backbone.Subset
   constructor: (options) ->
     @autoBind()
     @parent = options?.parent
-    if not (@parent instanceof Backbone.Collection or @parent instanceof Backbrace.Subset)
-      throw 'Required option: parent must be a Collection or Subset.'
-
-    @indices = options?.indices
-    if !(@indices)
-      @object = options?.object
-      @property = options?.property
-      if !(@object)
-        throw 'No indices given, but also no object'
-      if !(@property)
-        throw 'No indices given, but also no property'
+    if not @parent?
+      throw 'Required option: parent'
+    @object = options?.object
+    @property = options?.property
+    if @object? and @property?
       @indices = @object.get(@property)
-      @object.bind('change:'+@property, @update)
-    if !(@indices)
-      throw 'No indices provided; or, object property not present'
-
-    @options = options
-    delete @options.parent
-    delete @options.object
-    delete @options.property
-    delete @options.indices
+      if not @indices?
+        throw 'Object property is not present.'
+      @object.bind 'change:'+@property, =>
+        @indices = @object.get(@property)
+        @update()
+    else
+      @indices = options?.indices
+      if not @indices?
+        throw 'Required option: indices (if object, property not provided).'
     @_bind()
     @_reset()
-    @initialize(@options)
-  update: ->
-    if @object
-      @indices = @object.get(@property)
-    @_reset()
-    @trigger('reset', this)
-    return this
+  filterfn: (id) ->
+    return id in @indices
   _models: ->
-    that = this
-    return _.filter(@parent.models, (obj) -> return obj.id in that.indices)
-_.supplement(Backbrace.IndexedSubset.prototype, Backbrace.Subset.prototype)
-
-# **Note: This is deprecated, mostly because of how miserable
-# DataTables has made us.  Might be worth dropping me a note before
-# you use it.** Binds a Backbone collection to a DataTables table.
-# The columns should have mDataProp defined and equal to the
-# appropriate model attribute.
-#
-  # Two working examples of table view use.  We have to have the table
-  # created and inserted into its parent before calling dataTable()
-  # since the constructor tries to wrap the element.
-  #
-  #     window.initb = ->
-  #       myel = $('<table></table>')
-  #       $('.content').append(myel)
-  #       foo = new window.TableView
-  #         collection: window.Nodes
-  #         el: myel
-  #         table_options:
-  #           aoColumns: [
-  #             {sTitle: 'NodeA', mDataProp:'id'}
-  #             {sTitle: 'NodeB', mDataProp:'id'}
-  #             {sTitle: 'NodeC', mDataProp:'id'}
-  #           ]
-  #       foo.render()
-  #
-  #     window.initc = ->
-  #       myel = $('<table></table>')
-  #       $('.content').append(myel)
-  #       foo = new window.NodeListView
-  #         el: $('#frazzle')
-  #         collection: window.Nodes
-  #       foo.render()
+    return @parent.filter (obj) => return obj.id in @indices
 
 class window.Backbrace.Tableview extends Backbone.View
   collection: null
@@ -373,7 +326,7 @@ window.Backbrace.buildTabRouter = (tabBarView, tabPaneView) ->
   for tabid, tabview of tabPaneView.views
     ext.routes[tabid] = '_tab_'+tabid
     do (tabid) ->
-      ext['_tab_'+tabid] = -> 
+      ext['_tab_'+tabid] = ->
         tabBarView.setTab(tabid)
   router = new (Backbone.Router.extend(ext))
   return router

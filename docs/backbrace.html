@@ -124,77 +124,33 @@ event.  Should be called if the filter is modified.</p>             </td>       
 (<code>indices</code>); presents the interface of a collection containing the
 models whose IDs are listed.  Can also bind to a property of a
 model.  Changes to the property will trigger a <code>reset</code> event (via
-<code>Subset.update()</code>) instead of add/remove events.</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="k">class</span> <span class="nb">window</span><span class="p">.</span><span class="nx">Backbrace</span><span class="p">.</span><span class="nx">IndexedSubset</span>
-  <span class="nv">models: </span><span class="p">[]</span>
-  <span class="nv">indices: </span><span class="p">[]</span>
+<code>Subset.update()</code>) instead of add/remove events.</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="k">class</span> <span class="nb">window</span><span class="p">.</span><span class="nx">Backbone</span><span class="p">.</span><span class="nx">IndexedSubset</span> <span class="k">extends</span> <span class="nx">Backbone</span><span class="p">.</span><span class="nx">Subset</span>
   <span class="nv">constructor: </span><span class="nf">(options) -&gt;</span>
     <span class="nx">@autoBind</span><span class="p">()</span>
     <span class="vi">@parent = </span><span class="nx">options</span><span class="o">?</span><span class="p">.</span><span class="nx">parent</span>
-    <span class="k">if</span> <span class="o">not</span> <span class="p">(</span><span class="nx">@parent</span> <span class="k">instanceof</span> <span class="nx">Backbone</span><span class="p">.</span><span class="nx">Collection</span> <span class="o">or</span> <span class="nx">@parent</span> <span class="k">instanceof</span> <span class="nx">Backbrace</span><span class="p">.</span><span class="nx">Subset</span><span class="p">)</span>
-      <span class="k">throw</span> <span class="s1">&#39;Required option: parent must be a Collection or Subset.&#39;</span>
-
-    <span class="vi">@indices = </span><span class="nx">options</span><span class="o">?</span><span class="p">.</span><span class="nx">indices</span>
-    <span class="k">if</span> <span class="o">!</span><span class="p">(</span><span class="nx">@indices</span><span class="p">)</span>
-      <span class="vi">@object = </span><span class="nx">options</span><span class="o">?</span><span class="p">.</span><span class="nx">object</span>
-      <span class="vi">@property = </span><span class="nx">options</span><span class="o">?</span><span class="p">.</span><span class="nx">property</span>
-      <span class="k">if</span> <span class="o">!</span><span class="p">(</span><span class="nx">@object</span><span class="p">)</span>
-        <span class="k">throw</span> <span class="s1">&#39;No indices given, but also no object&#39;</span>
-      <span class="k">if</span> <span class="o">!</span><span class="p">(</span><span class="nx">@property</span><span class="p">)</span>
-        <span class="k">throw</span> <span class="s1">&#39;No indices given, but also no property&#39;</span>
+    <span class="k">if</span> <span class="o">not</span> <span class="nx">@parent</span><span class="o">?</span>
+      <span class="k">throw</span> <span class="s1">&#39;Required option: parent&#39;</span>
+    <span class="vi">@object = </span><span class="nx">options</span><span class="o">?</span><span class="p">.</span><span class="nx">object</span>
+    <span class="vi">@property = </span><span class="nx">options</span><span class="o">?</span><span class="p">.</span><span class="nx">property</span>
+    <span class="k">if</span> <span class="nx">@object</span><span class="o">?</span> <span class="o">and</span> <span class="nx">@property</span><span class="o">?</span>
       <span class="vi">@indices = </span><span class="nx">@object</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">@property</span><span class="p">)</span>
-      <span class="nx">@object</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="s1">&#39;change:&#39;</span><span class="o">+</span><span class="nx">@property</span><span class="p">,</span> <span class="nx">@update</span><span class="p">)</span>
-    <span class="k">if</span> <span class="o">!</span><span class="p">(</span><span class="nx">@indices</span><span class="p">)</span>
-      <span class="k">throw</span> <span class="s1">&#39;No indices provided; or, object property not present&#39;</span>
-
-    <span class="vi">@options = </span><span class="nx">options</span>
-    <span class="k">delete</span> <span class="nx">@options</span><span class="p">.</span><span class="nx">parent</span>
-    <span class="k">delete</span> <span class="nx">@options</span><span class="p">.</span><span class="nx">object</span>
-    <span class="k">delete</span> <span class="nx">@options</span><span class="p">.</span><span class="nx">property</span>
-    <span class="k">delete</span> <span class="nx">@options</span><span class="p">.</span><span class="nx">indices</span>
+      <span class="k">if</span> <span class="o">not</span> <span class="nx">@indices</span><span class="o">?</span>
+        <span class="k">throw</span> <span class="s1">&#39;Object property is not present.&#39;</span>
+      <span class="nx">@object</span><span class="p">.</span><span class="nx">bind</span> <span class="s1">&#39;change:&#39;</span><span class="o">+</span><span class="nx">@property</span><span class="p">,</span> <span class="o">=&gt;</span>
+        <span class="vi">@indices = </span><span class="nx">@object</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">@property</span><span class="p">)</span>
+        <span class="nx">@update</span><span class="p">()</span>
+    <span class="k">else</span>
+      <span class="vi">@indices = </span><span class="nx">options</span><span class="o">?</span><span class="p">.</span><span class="nx">indices</span>
+      <span class="k">if</span> <span class="o">not</span> <span class="nx">@indices</span><span class="o">?</span>
+        <span class="k">throw</span> <span class="s1">&#39;Required option: indices (if object, property not provided).&#39;</span>
     <span class="nx">@_bind</span><span class="p">()</span>
     <span class="nx">@_reset</span><span class="p">()</span>
-    <span class="nx">@initialize</span><span class="p">(</span><span class="nx">@options</span><span class="p">)</span>
-  <span class="nv">update: </span><span class="o">-&gt;</span>
-    <span class="k">if</span> <span class="nx">@object</span>
-      <span class="vi">@indices = </span><span class="nx">@object</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">@property</span><span class="p">)</span>
-    <span class="nx">@_reset</span><span class="p">()</span>
-    <span class="nx">@trigger</span><span class="p">(</span><span class="s1">&#39;reset&#39;</span><span class="p">,</span> <span class="k">this</span><span class="p">)</span>
-    <span class="k">return</span> <span class="k">this</span>
+  <span class="nv">filterfn: </span><span class="nf">(id) -&gt;</span>
+    <span class="k">return</span> <span class="nx">id</span> <span class="k">in</span> <span class="nx">@indices</span>
   <span class="nv">_models: </span><span class="o">-&gt;</span>
-    <span class="nv">that = </span><span class="k">this</span>
-    <span class="k">return</span> <span class="nx">_</span><span class="p">.</span><span class="nx">filter</span><span class="p">(</span><span class="nx">@parent</span><span class="p">.</span><span class="nx">models</span><span class="p">,</span> <span class="nf">(obj) -&gt;</span> <span class="k">return</span> <span class="nx">obj</span><span class="p">.</span><span class="nx">id</span> <span class="k">in</span> <span class="nx">that</span><span class="p">.</span><span class="nx">indices</span><span class="p">)</span>
-<span class="nx">_</span><span class="p">.</span><span class="nx">supplement</span><span class="p">(</span><span class="nx">Backbrace</span><span class="p">.</span><span class="nx">IndexedSubset</span><span class="p">.</span><span class="nx">prototype</span><span class="p">,</span> <span class="nx">Backbrace</span><span class="p">.</span><span class="nx">Subset</span><span class="p">.</span><span class="nx">prototype</span><span class="p">)</span></pre></div>             </td>           </tr>                               <tr id="section-10">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-10">&#182;</a>               </div>               <p><strong>Note: This is deprecated, mostly because of how miserable
-DataTables has made us.  Might be worth dropping me a note before
-you use it.</strong> Binds a Backbone collection to a DataTables table.
-The columns should have mDataProp defined and equal to the
-appropriate model attribute.</p>
+    <span class="k">return</span> <span class="nx">@parent</span><span class="p">.</span><span class="nx">filter</span> <span class="p">(</span><span class="nx">obj</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="k">return</span> <span class="nx">obj</span><span class="p">.</span><span class="nx">id</span> <span class="k">in</span> <span class="nx">@indices</span>
 
-<p>Two working examples of table view use.  We have to have the table
-created and inserted into its parent before calling dataTable()
-since the constructor tries to wrap the element.</p>
-
-<pre><code>window.initb = -&gt;
-  myel = $('&lt;table&gt;&lt;/table&gt;')
-  $('.content').append(myel)
-  foo = new window.TableView
-    collection: window.Nodes
-    el: myel
-    table_options:
-      aoColumns: [
-        {sTitle: 'NodeA', mDataProp:'id'}
-        {sTitle: 'NodeB', mDataProp:'id'}
-        {sTitle: 'NodeC', mDataProp:'id'}
-      ]
-  foo.render()
-
-window.initc = -&gt;
-  myel = $('&lt;table&gt;&lt;/table&gt;')
-  $('.content').append(myel)
-  foo = new window.NodeListView
-    el: $('#frazzle')
-    collection: window.Nodes
-  foo.render()
-</code></pre>             </td>             <td class="code">               <div class="highlight"><pre><span class="k">class</span> <span class="nb">window</span><span class="p">.</span><span class="nx">Backbrace</span><span class="p">.</span><span class="nx">Tableview</span> <span class="k">extends</span> <span class="nx">Backbone</span><span class="p">.</span><span class="nx">View</span>
+<span class="k">class</span> <span class="nb">window</span><span class="p">.</span><span class="nx">Backbrace</span><span class="p">.</span><span class="nx">Tableview</span> <span class="k">extends</span> <span class="nx">Backbone</span><span class="p">.</span><span class="nx">View</span>
   <span class="nv">collection: </span><span class="kc">null</span>
   <span class="nv">table_options: </span><span class="kc">null</span>
   <span class="nv">datatable: </span><span class="kc">null</span>
@@ -228,7 +184,7 @@ window.initc = -&gt;
     <span class="k">if</span> <span class="o">!</span><span class="p">(</span><span class="nx">row</span><span class="o">?</span><span class="p">)</span>
       <span class="k">return</span>
     <span class="nx">@datatable</span><span class="p">.</span><span class="nx">fnUpdate</span><span class="p">(</span><span class="nx">model</span><span class="p">.</span><span class="nx">toJSON</span><span class="p">(),</span> <span class="nx">row</span><span class="p">)</span>
-    <span class="nx">@trigger</span><span class="p">(</span><span class="s1">&#39;rowchange&#39;</span><span class="p">,</span> <span class="nx">row</span><span class="p">,</span> <span class="nx">model</span><span class="p">.</span><span class="nx">id</span><span class="p">,</span> <span class="nx">@datatable</span><span class="p">.</span><span class="nx">fnGetNodes</span><span class="p">(</span><span class="nx">row</span><span class="p">))</span></pre></div>             </td>           </tr>                               <tr id="section-11">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-11">&#182;</a>               </div>               <p>Takes a <code>collection</code> and <code>itemView</code>, a class that implements the
+    <span class="nx">@trigger</span><span class="p">(</span><span class="s1">&#39;rowchange&#39;</span><span class="p">,</span> <span class="nx">row</span><span class="p">,</span> <span class="nx">model</span><span class="p">.</span><span class="nx">id</span><span class="p">,</span> <span class="nx">@datatable</span><span class="p">.</span><span class="nx">fnGetNodes</span><span class="p">(</span><span class="nx">row</span><span class="p">))</span></pre></div>             </td>           </tr>                               <tr id="section-10">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-10">&#182;</a>               </div>               <p>Takes a <code>collection</code> and <code>itemView</code>, a class that implements the
 Backbone View interface.  Renders an instance of <code>itemView</code> for each
 item in the collection.</p>
 
@@ -272,7 +228,7 @@ be shown in the list.  The new way of doing this is with Subset.</p>            
     <span class="k">return</span> <span class="k">this</span>
   <span class="nv">_addItem: </span><span class="nf">(model) -&gt;</span>
     <span class="nv">model.view = </span><span class="k">new</span> <span class="nx">@itemView</span><span class="p">({</span><span class="nv">model: </span><span class="nx">model</span><span class="p">})</span>
-    <span class="nx">@el</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="nx">$</span><span class="p">(</span><span class="nx">model</span><span class="p">.</span><span class="nx">view</span><span class="p">.</span><span class="nx">render</span><span class="p">().</span><span class="nx">el</span><span class="p">).</span><span class="nx">addClass</span><span class="p">(</span><span class="s2">&quot;bb-list-item&quot;</span><span class="p">))</span></pre></div>             </td>           </tr>                               <tr id="section-12">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-12">&#182;</a>               </div>               <p>Takes <code>views</code>, an object mapping tab IDs to view classes, and
+    <span class="nx">@el</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="nx">$</span><span class="p">(</span><span class="nx">model</span><span class="p">.</span><span class="nx">view</span><span class="p">.</span><span class="nx">render</span><span class="p">().</span><span class="nx">el</span><span class="p">).</span><span class="nx">addClass</span><span class="p">(</span><span class="s2">&quot;bb-list-item&quot;</span><span class="p">))</span></pre></div>             </td>           </tr>                               <tr id="section-11">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-11">&#182;</a>               </div>               <p>Takes <code>views</code>, an object mapping tab IDs to view classes, and
 <code>defaultView</code>, one of those tab IDs.  The <code>TabPaneView</code> will create
 and render an instance of the corresponding view class.  When you
 call <code>onTabChange</code> with a new tab ID, it will destroy the old markup
@@ -291,7 +247,7 @@ and do the same for the new view.</p>
   <span class="nv">render: </span><span class="o">-&gt;</span>
     <span class="nx">@el</span><span class="p">.</span><span class="nx">empty</span><span class="p">()</span>
     <span class="nx">@activeView</span><span class="o">?</span><span class="p">.</span><span class="nx">render</span><span class="p">()</span>
-    <span class="k">return</span> <span class="k">this</span></pre></div>             </td>           </tr>                               <tr id="section-13">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-13">&#182;</a>               </div>               <p>This implements the actual UI element that lets you change which
+    <span class="k">return</span> <span class="k">this</span></pre></div>             </td>           </tr>                               <tr id="section-12">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-12">&#182;</a>               </div>               <p>This implements the actual UI element that lets you change which
 child view a <code>TabPaneView</code> is displaying.  You will probably want to
 modify this for your own purposes; this one depends heavily on
 jQuery UI.  (If you're using jQuery UI want a tab bar that looks
@@ -329,14 +285,14 @@ make the two play nicely together.</p>             </td>             <td class="
       <span class="nx">@update</span><span class="p">()</span>
       <span class="nx">@trigger</span><span class="p">(</span><span class="s1">&#39;tabchange&#39;</span><span class="p">,</span> <span class="nx">tabid</span><span class="p">)</span>
   <span class="nv">getTab: </span><span class="o">-&gt;</span>
-    <span class="k">return</span> <span class="nx">@activeTab</span></pre></div>             </td>           </tr>                               <tr id="section-14">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-14">&#182;</a>               </div>               <p>Given an instance of <code>TabBarView</code> and an instance of <code>TabPaneView</code>,
+    <span class="k">return</span> <span class="nx">@activeTab</span></pre></div>             </td>           </tr>                               <tr id="section-13">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-13">&#182;</a>               </div>               <p>Given an instance of <code>TabBarView</code> and an instance of <code>TabPaneView</code>,
 this utility function will construct a Backbone Router for you so
 that each tab will have a corresponding hash URI.</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nb">window</span><span class="p">.</span><span class="nv">Backbrace.buildTabRouter = </span><span class="nf">(tabBarView, tabPaneView) -&gt;</span>
   <span class="nv">ext = </span><span class="p">{</span><span class="nv">routes: </span><span class="p">{}}</span>
   <span class="k">for</span> <span class="nx">tabid</span><span class="p">,</span> <span class="nx">tabview</span> <span class="k">of</span> <span class="nx">tabPaneView</span><span class="p">.</span><span class="nx">views</span>
     <span class="nx">ext</span><span class="p">.</span><span class="nx">routes</span><span class="p">[</span><span class="nx">tabid</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;_tab_&#39;</span><span class="o">+</span><span class="nx">tabid</span>
     <span class="nx">do</span> <span class="nf">(tabid) -&gt;</span>
-      <span class="nx">ext</span><span class="p">[</span><span class="s1">&#39;_tab_&#39;</span><span class="o">+</span><span class="nx">tabid</span><span class="p">]</span> <span class="o">=</span> <span class="o">-&gt;</span> 
+      <span class="nx">ext</span><span class="p">[</span><span class="s1">&#39;_tab_&#39;</span><span class="o">+</span><span class="nx">tabid</span><span class="p">]</span> <span class="o">=</span> <span class="o">-&gt;</span>
         <span class="nx">tabBarView</span><span class="p">.</span><span class="nx">setTab</span><span class="p">(</span><span class="nx">tabid</span><span class="p">)</span>
   <span class="nv">router = </span><span class="k">new</span> <span class="p">(</span><span class="nx">Backbone</span><span class="p">.</span><span class="nx">Router</span><span class="p">.</span><span class="nx">extend</span><span class="p">(</span><span class="nx">ext</span><span class="p">))</span>
   <span class="k">return</span> <span class="nx">router</span>

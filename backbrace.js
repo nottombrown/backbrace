@@ -1,17 +1,17 @@
 (function() {
   var autoBind, subsetMethods;
-  var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; }, __indexOf = Array.prototype.indexOf || function(item) {
-    for (var i = 0, l = this.length; i < l; i++) {
-      if (this[i] === item) return i;
-    }
-    return -1;
-  }, __hasProp = Object.prototype.hasOwnProperty, __extends = function(child, parent) {
+  var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; }, __hasProp = Object.prototype.hasOwnProperty, __extends = function(child, parent) {
     for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; }
     function ctor() { this.constructor = child; }
     ctor.prototype = parent.prototype;
     child.prototype = new ctor;
     child.__super__ = parent.prototype;
     return child;
+  }, __indexOf = Array.prototype.indexOf || function(item) {
+    for (var i = 0, l = this.length; i < l; i++) {
+      if (this[i] === item) return i;
+    }
+    return -1;
   };
   autoBind = {
     autoBind: function() {
@@ -162,59 +162,45 @@
       return _[method_name].apply(_, [this.models].concat(_.toArray(arguments)));
     };
   });
-  window.Backbrace.IndexedSubset = (function() {
-    IndexedSubset.prototype.models = [];
-    IndexedSubset.prototype.indices = [];
+  window.Backbone.IndexedSubset = (function() {
+    __extends(IndexedSubset, Backbone.Subset);
     function IndexedSubset(options) {
       this.autoBind();
       this.parent = options != null ? options.parent : void 0;
-      if (!(this.parent instanceof Backbone.Collection || this.parent instanceof Backbrace.Subset)) {
-        throw 'Required option: parent must be a Collection or Subset.';
+      if (!(this.parent != null)) {
+        throw 'Required option: parent';
       }
-      this.indices = options != null ? options.indices : void 0;
-      if (!this.indices) {
-        this.object = options != null ? options.object : void 0;
-        this.property = options != null ? options.property : void 0;
-        if (!this.object) {
-          throw 'No indices given, but also no object';
-        }
-        if (!this.property) {
-          throw 'No indices given, but also no property';
-        }
+      this.object = options != null ? options.object : void 0;
+      this.property = options != null ? options.property : void 0;
+      if ((this.object != null) && (this.property != null)) {
         this.indices = this.object.get(this.property);
-        this.object.bind('change:' + this.property, this.update);
+        if (!(this.indices != null)) {
+          throw 'Object property is not present.';
+        }
+        this.object.bind('change:' + this.property, __bind(function() {
+          this.indices = this.object.get(this.property);
+          return this.update();
+        }, this));
+      } else {
+        this.indices = options != null ? options.indices : void 0;
+        if (!(this.indices != null)) {
+          throw 'Required option: indices (if object, property not provided).';
+        }
       }
-      if (!this.indices) {
-        throw 'No indices provided; or, object property not present';
-      }
-      this.options = options;
-      delete this.options.parent;
-      delete this.options.object;
-      delete this.options.property;
-      delete this.options.indices;
       this._bind();
       this._reset();
-      this.initialize(this.options);
     }
-    IndexedSubset.prototype.update = function() {
-      if (this.object) {
-        this.indices = this.object.get(this.property);
-      }
-      this._reset();
-      this.trigger('reset', this);
-      return this;
+    IndexedSubset.prototype.filterfn = function(id) {
+      return __indexOf.call(this.indices, id) >= 0;
     };
     IndexedSubset.prototype._models = function() {
-      var that;
-      that = this;
-      return _.filter(this.parent.models, function(obj) {
+      return this.parent.filter(__bind(function(obj) {
         var _ref;
-        return _ref = obj.id, __indexOf.call(that.indices, _ref) >= 0;
-      });
+        return _ref = obj.id, __indexOf.call(this.indices, _ref) >= 0;
+      }, this));
     };
     return IndexedSubset;
   })();
-  _.supplement(Backbrace.IndexedSubset.prototype, Backbrace.Subset.prototype);
   window.Backbrace.Tableview = (function() {
     __extends(Tableview, Backbone.View);
     function Tableview() {
