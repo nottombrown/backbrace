@@ -71,8 +71,8 @@ class window.Backbrace.Subset
           if @filterfn(a)
             @_reset()
             @trigger.apply(this, arguments)
-        when 'refresh'
-          @_reset()
+        when 'refresh', 'reset'
+          @update()
         else
           if evt.indexOf('change') == 0
             if @getByCid(a)

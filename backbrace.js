@@ -72,7 +72,8 @@
             }
             break;
           case 'refresh':
-            return this._reset();
+          case 'reset':
+            return this.update();
           default:
             if (evt.indexOf('change') === 0) {
               if (this.getByCid(a)) {

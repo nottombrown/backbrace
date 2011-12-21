@@ -57,8 +57,8 @@ snippet</a>.</p>             </td>             <td class="code">               <
           <span class="k">if</span> <span class="nx">@filterfn</span><span class="p">(</span><span class="nx">a</span><span class="p">)</span>
             <span class="nx">@_reset</span><span class="p">()</span>
             <span class="nx">@trigger</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">)</span>
-        <span class="k">when</span> <span class="s1">&#39;refresh&#39;</span>
-          <span class="nx">@_reset</span><span class="p">()</span>
+        <span class="k">when</span> <span class="s1">&#39;refresh&#39;</span><span class="p">,</span> <span class="s1">&#39;reset&#39;</span>
+          <span class="nx">@update</span><span class="p">()</span>
         <span class="k">else</span>
           <span class="k">if</span> <span class="nx">evt</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="s1">&#39;change&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span>
             <span class="k">if</span> <span class="nx">@getByCid</span><span class="p">(</span><span class="nx">a</span><span class="p">)</span>
