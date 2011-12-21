@@ -66,13 +66,19 @@
         switch (evt) {
           case 'add':
           case 'remove':
+          case 'destroy':
             if (this.filterfn(a)) {
               this._reset();
               return this.trigger.apply(this, arguments);
             }
             break;
-          case 'refresh':
-            return this._reset();
+          case 'error':
+            if (this.filterfn(a)) {
+              return this.trigger.apply(this, arguments);
+            }
+            break;
+          case 'reset':
+            return this.update();
           default:
             if (evt.indexOf('change') === 0) {
               if (this.getByCid(a)) {

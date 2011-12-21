@@ -67,12 +67,17 @@ class window.Backbrace.Subset
     @parent.bind 'all', (evt) =>
       a = arguments[1]
       switch evt
-        when 'add', 'remove'
+        when 'add', 'remove', 'destroy'
           if @filterfn(a)
             @_reset()
             @trigger.apply(this, arguments)
-        when 'refresh'
-          @_reset()
+        when 'error'
+          if @filterfn(a)
+            @trigger.apply(this, arguments)
+        when 'reset'
+          # This triggers the 'reset' event on the Subset and
+          # refilters its contents.
+          @update()
         else
           if evt.indexOf('change') == 0
             if @getByCid(a)
