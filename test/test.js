@@ -48,6 +48,16 @@
       });
       return expect(1);
     });
+    test('Custom event propagation from model', function() {
+      var fixt;
+      fixt = build_fixture();
+      fixt.subset.bind('whizbang', function() {
+        return ok(true);
+      });
+      fixt.parent.get(1).trigger('whizbang');
+      fixt.parent.get(2).trigger('whizbang');
+      return expect(1);
+    });
     test('Add event propagation', function() {
       var fixt;
       fixt = build_fixture();

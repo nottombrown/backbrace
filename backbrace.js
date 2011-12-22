@@ -55,43 +55,43 @@
       this.options = options;
       delete this.options.parent;
       delete this.options.filterfn;
+      this._bindings = {};
+      this.models = [];
       this._bind();
       this._reset();
       this.initialize(this.options);
     }
     Subset.prototype._bind = function() {
-      this.parent.bind('all', __bind(function(evt) {
-        var a;
-        a = arguments[1];
-        switch (evt) {
+      this.parent.bind('all', __bind(function(ev, model) {
+        switch (ev) {
           case 'add':
           case 'remove':
           case 'destroy':
-            if (this.filterfn(a)) {
+            if (this.filterfn(model)) {
               this._reset();
               return this.trigger.apply(this, arguments);
             }
             break;
           case 'error':
-            if (this.filterfn(a)) {
+            if (this.filterfn(model)) {
               return this.trigger.apply(this, arguments);
             }
             break;
           case 'reset':
             return this.update();
           default:
-            if (evt.indexOf('change') === 0) {
-              if (this.getByCid(a)) {
-                if (!this.filterfn(a)) {
+            if (ev.indexOf('change') === 0) {
+              if (this.getByCid(model)) {
+                if (!this.filterfn(model)) {
                   this._reset();
-                  this.trigger('remove', a, this);
+                  this.trigger('remove', model, this);
                 } else {
                   this.trigger.apply(this, arguments);
                 }
               }
-              if (!this.getByCid(a) && this.filterfn(a)) {
+              if (!this.getByCid(model) && this.filterfn(model)) {
                 this._reset();
-                return this.trigger('add', a, this);
+                return this.trigger('add', model, this);
               }
             }
         }
@@ -101,11 +101,36 @@
     Subset.prototype.initialize = function(options) {};
     Subset.prototype._reset = function() {
       this.model = this.parent.model;
+      _.each(this.models, __bind(function(model) {
+        return model.unbind('all', this._bindings[model.id]);
+      }, this));
       this.models = this._models();
+      _.each(this.models, __bind(function(model) {
+        return this._bindings[model.id] = model.bind('all', __bind(function(ev) {
+          return this._onModelEvent(model, ev, arguments);
+        }, this));
+      }, this));
       return this.length = this.models.length;
     };
     Subset.prototype._models = function() {
       return _.filter(this.parent.models, this.filterfn);
+    };
+    Subset.prototype._onModelEvent = function(model, ev, params) {
+      switch (ev) {
+        case 'add':
+        case 'remove':
+        case 'destroy':
+        case 'reset':
+        case 'error':
+          return;
+        default:
+          if (ev.indexOf('change') === 0) {
+            return;
+          }
+      }
+      if (this.filterfn(model)) {
+        return this.trigger.apply(this, params);
+      }
     };
     Subset.prototype.update = function() {
       this._reset();

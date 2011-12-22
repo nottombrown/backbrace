@@ -60,44 +60,67 @@ class window.Backbrace.Subset
     @options = options
     delete @options.parent
     delete @options.filterfn
+
+    @_bindings = {}
+    @models = []
+
     @_bind()
     @_reset()
     @initialize(@options)
   _bind: ->
-    @parent.bind 'all', (evt) =>
-      a = arguments[1]
-      switch evt
+    @parent.bind 'all', (ev, model) =>
+      switch ev
         when 'add', 'remove', 'destroy'
-          if @filterfn(a)
+          if @filterfn(model)
             @_reset()
             @trigger.apply(this, arguments)
         when 'error'
-          if @filterfn(a)
+          if @filterfn(model)
             @trigger.apply(this, arguments)
         when 'reset'
           # This triggers the 'reset' event on the Subset and
           # refilters its contents.
           @update()
         else
-          if evt.indexOf('change') == 0
-            if @getByCid(a)
-              if !@filterfn(a)
+          # This is a trick to catch all `change:xxx` events.  Custom
+          # events are handled in `_onModelEvent`, not here.
+          if ev.indexOf('change') == 0
+            if @getByCid(model)
+              if !@filterfn(model)
                 @_reset()
-                @trigger('remove', a, this)
+                @trigger('remove', model, this)
               else
                 @trigger.apply(this, arguments)
             # The element is new.
-            if !@getByCid(a) and this.filterfn(a)
+            if !@getByCid(model) and this.filterfn(model)
               @_reset()
-              @trigger('add', a, this)
+              @trigger('add', model, this)
     @_boundOnModelEvent = _.bind(@_onModelEvent, this)
   initialize: (options) ->
   _reset: ->
     @model = @parent.model
+    _.each @models, (model) =>
+      model.unbind('all', @_bindings[model.id])
     @models = @_models()
+    _.each @models, (model) =>
+      @_bindings[model.id] = model.bind 'all', (ev) =>
+        @_onModelEvent(model, ev, arguments)
     @length = @models.length
   _models: ->
     return _.filter(@parent.models, @filterfn)
+  _onModelEvent: (model, ev, params) ->
+    # This monstronsity just filters out stock Backbone events, which
+    # are handled in `_bind`.
+    switch ev
+      when 'add', 'remove', 'destroy', 'reset', 'error'
+        return
+      else
+        if ev.indexOf('change') == 0
+          return
+    # Custom events are forwarded if the model is a member of the
+    # subset.
+    if @filterfn(model)
+      @trigger.apply(this, params)
   # Causes the subset to be refiltered, and also raises the reset
   # event.  Should be called if the filter is modified.
   update: ->

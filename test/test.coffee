@@ -28,6 +28,13 @@ $ ->
     fixt.parent.get(2).save({z: 'z'})
     expect 1
 
+  test 'Custom event propagation from model', ->
+    fixt = build_fixture()
+    fixt.subset.bind('whizbang', -> ok(true))
+    fixt.parent.get(1).trigger('whizbang')
+    fixt.parent.get(2).trigger('whizbang')
+    expect 1
+
   test 'Add event propagation', ->
     fixt = build_fixture()
     fixt.subset.bind('add', -> ok(true))
