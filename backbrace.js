@@ -341,12 +341,16 @@
       this.autoBind();
       this.el = $(this.el);
       this.views = options.views;
+      this.activeView = null;
       if (options.defaultView != null) {
-        return this.activeView = new this.views[options.defaultView]();
+        return this.onTabChange(options.defaultView);
       }
     };
     TabPaneView.prototype.onTabChange = function(tabid) {
-      this.activeView.remove();
+      var _ref;
+      if ((_ref = this.activeView) != null) {
+        _ref.remove();
+      }
       this.activeView = new this.views[tabid]();
       return this.render();
     };

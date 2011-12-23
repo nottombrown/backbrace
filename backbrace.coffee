@@ -295,10 +295,11 @@ class window.Backbrace.TabPaneView extends Backbone.View
     @autoBind()
     @el = $(@el)
     @views = options.views
+    @activeView = null
     if options.defaultView?
-      @activeView = new @views[options.defaultView]()
+      @onTabChange(options.defaultView)
   onTabChange: (tabid) ->
-    @activeView.remove()
+    @activeView?.remove()
     @activeView = new @views[tabid]()
     @render()
   render: ->
