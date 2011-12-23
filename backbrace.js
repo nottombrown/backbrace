@@ -342,23 +342,17 @@
       this.el = $(this.el);
       this.views = options.views;
       if (options.defaultView != null) {
-        return this.activeView = new this.views[options.defaultView]({
-          el: this.el
-        });
+        return this.activeView = new this.views[options.defaultView]();
       }
     };
     TabPaneView.prototype.onTabChange = function(tabid) {
-      this.activeView = new this.views[tabid]({
-        el: this.el
-      });
+      this.activeView.remove();
+      this.activeView = new this.views[tabid]();
       return this.render();
     };
     TabPaneView.prototype.render = function() {
       var _ref;
-      this.el.empty();
-      if ((_ref = this.activeView) != null) {
-        _ref.render();
-      }
+      this.el.append((_ref = this.activeView) != null ? _ref.render().el : void 0);
       return this;
     };
     return TabPaneView;

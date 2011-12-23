@@ -16,6 +16,16 @@ class ThirdTabView extends Backbone.View
     $(@el).text('Third tab...')
     return @
 
+class TabWithButton extends Backbone.View
+  events: 
+    "click button": "alert"
+  initialize: ->
+  render: ->
+    $(@el).empty().html('<button> click me! </button>')
+    return @
+  alert: ->
+    alert "I was clicked!"
+
 window.init = ->
   tabBarView = new Backbrace.TabBarView
     el: $('#tab-bar')
@@ -26,6 +36,7 @@ window.init = ->
       first: FirstTabView
       second: SecondTabView
       third: ThirdTabView
+      fourth: TabWithButton
   tabRouter = Backbrace.buildTabRouter(tabBarView, tabPaneView)
   tabBarView.bind 'tabchange', (tabid) ->
     tabPaneView.onTabChange(tabid)

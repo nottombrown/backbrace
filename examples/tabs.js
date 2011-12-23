@@ -1,5 +1,5 @@
 (function() {
-  var FirstTabView, SecondTabView, ThirdTabView;
+  var FirstTabView, SecondTabView, TabWithButton, ThirdTabView;
   var __hasProp = Object.prototype.hasOwnProperty, __extends = function(child, parent) {
     for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; }
     function ctor() { this.constructor = child; }
@@ -44,6 +44,24 @@
     };
     return ThirdTabView;
   })();
+  TabWithButton = (function() {
+    __extends(TabWithButton, Backbone.View);
+    function TabWithButton() {
+      TabWithButton.__super__.constructor.apply(this, arguments);
+    }
+    TabWithButton.prototype.events = {
+      "click button": "alert"
+    };
+    TabWithButton.prototype.initialize = function() {};
+    TabWithButton.prototype.render = function() {
+      $(this.el).empty().html('<button> click me! </button>');
+      return this;
+    };
+    TabWithButton.prototype.alert = function() {
+      return alert("I was clicked!");
+    };
+    return TabWithButton;
+  })();
   window.init = function() {
     var tabBarView, tabPaneView, tabRouter;
     tabBarView = new Backbrace.TabBarView({
@@ -55,7 +73,8 @@
       views: {
         first: FirstTabView,
         second: SecondTabView,
-        third: ThirdTabView
+        third: ThirdTabView,
+        fourth: TabWithButton
       }
     });
     tabRouter = Backbrace.buildTabRouter(tabBarView, tabPaneView);
