@@ -296,13 +296,13 @@ class window.Backbrace.TabPaneView extends Backbone.View
     @el = $(@el)
     @views = options.views
     if options.defaultView?
-      @activeView = new @views[options.defaultView]({el: @el})
+      @activeView = new @views[options.defaultView]()
   onTabChange: (tabid) ->
-    @activeView = new @views[tabid]({el: @el})
+    @activeView.remove()
+    @activeView = new @views[tabid]()
     @render()
   render: ->
-    @el.empty()
-    @activeView?.render()
+    @el.append @activeView?.render().el
     return this
 
 # This implements the actual UI element that lets you change which

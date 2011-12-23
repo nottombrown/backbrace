@@ -260,13 +260,13 @@ and do the same for the new view.</p>
     <span class="vi">@el = </span><span class="nx">$</span><span class="p">(</span><span class="nx">@el</span><span class="p">)</span>
     <span class="vi">@views = </span><span class="nx">options</span><span class="p">.</span><span class="nx">views</span>
     <span class="k">if</span> <span class="nx">options</span><span class="p">.</span><span class="nx">defaultView</span><span class="o">?</span>
-      <span class="vi">@activeView = </span><span class="k">new</span> <span class="nx">@views</span><span class="p">[</span><span class="nx">options</span><span class="p">.</span><span class="nx">defaultView</span><span class="p">]({</span><span class="nv">el: </span><span class="nx">@el</span><span class="p">})</span>
+      <span class="vi">@activeView = </span><span class="k">new</span> <span class="nx">@views</span><span class="p">[</span><span class="nx">options</span><span class="p">.</span><span class="nx">defaultView</span><span class="p">]()</span>
   <span class="nv">onTabChange: </span><span class="nf">(tabid) -&gt;</span>
-    <span class="vi">@activeView = </span><span class="k">new</span> <span class="nx">@views</span><span class="p">[</span><span class="nx">tabid</span><span class="p">]({</span><span class="nv">el: </span><span class="nx">@el</span><span class="p">})</span>
+    <span class="nx">@activeView</span><span class="p">.</span><span class="nx">remove</span><span class="p">()</span>
+    <span class="vi">@activeView = </span><span class="k">new</span> <span class="nx">@views</span><span class="p">[</span><span class="nx">tabid</span><span class="p">]()</span>
     <span class="nx">@render</span><span class="p">()</span>
   <span class="nv">render: </span><span class="o">-&gt;</span>
-    <span class="nx">@el</span><span class="p">.</span><span class="nx">empty</span><span class="p">()</span>
-    <span class="nx">@activeView</span><span class="o">?</span><span class="p">.</span><span class="nx">render</span><span class="p">()</span>
+    <span class="nx">@el</span><span class="p">.</span><span class="nx">append</span> <span class="nx">@activeView</span><span class="o">?</span><span class="p">.</span><span class="nx">render</span><span class="p">().</span><span class="nx">el</span>
     <span class="k">return</span> <span class="k">this</span></pre></div>             </td>           </tr>                               <tr id="section-16">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-16">&#182;</a>               </div>               <p>This implements the actual UI element that lets you change which
 child view a <code>TabPaneView</code> is displaying.  You will probably want to
 modify this for your own purposes; this one depends heavily on
