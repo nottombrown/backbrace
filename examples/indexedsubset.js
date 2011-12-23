@@ -26,15 +26,6 @@
   window.init = function() {
     var exampleListView, i;
     window.widgets = new Backbone.Collection;
-    window.visibleWidgets = new Backbrace.IndexedSubset({
-      parent: widgets,
-      indices: [6, 15]
-    });
-    exampleListView = new Backbrace.ListView({
-      itemView: ExampleItemView,
-      collection: visibleWidgets,
-      el: $('#widget-list')
-    });
     for (i = 0; i <= 19; i++) {
       widgets.add({
         id: i,
@@ -42,6 +33,15 @@
         weight: Math.floor(Math.random() * 35) + 5
       });
     }
+    window.visibleWidgets = new Backbrace.IndexedSubset({
+      parent: widgets,
+      indices: widgets.pluck('id')
+    });
+    exampleListView = new Backbrace.ListView({
+      itemView: ExampleItemView,
+      collection: visibleWidgets,
+      el: $('#widget-list')
+    });
     $('#filter-a').click(function() {
       window.visibleWidgets.indices = [6, 15];
       return visibleWidgets.update();
@@ -51,7 +51,7 @@
       return visibleWidgets.update();
     });
     return $('#filter-none').click(function() {
-      window.visibleWidgets.indices = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+      window.visibleWidgets.indices = widgets.pluck('id');
       return visibleWidgets.update();
     });
   };

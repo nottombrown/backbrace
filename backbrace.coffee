@@ -193,10 +193,15 @@ class window.Backbrace.IndexedSubset extends Backbrace.Subset
       @indices = options?.indices
       if not @indices?
         throw 'Required option: indices (if object, property not provided).'
+
+    @_bindings = {}
+    @models = []
+
     @_bind()
     @_reset()
-  filterfn: (id) ->
-    return id in @indices
+    @initialize(@options)
+  filterfn: (model) ->
+    return model.id in @indices
   _models: ->
     return @parent.filter (obj) => return obj.id in @indices
 

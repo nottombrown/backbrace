@@ -22,6 +22,7 @@ window.init = ->
     widgets.add
       name: 'Widget #'+i
       weight: Math.floor(Math.random()*35)+5
+  exampleListView.render()
 
   # Bind UI elements.  It's important that we call update() each time
   # we change `filterfn` so that the `Subset` knows to recompute which

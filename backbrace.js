@@ -218,11 +218,15 @@
           throw 'Required option: indices (if object, property not provided).';
         }
       }
+      this._bindings = {};
+      this.models = [];
       this._bind();
       this._reset();
+      this.initialize(this.options);
     }
-    IndexedSubset.prototype.filterfn = function(id) {
-      return __indexOf.call(this.indices, id) >= 0;
+    IndexedSubset.prototype.filterfn = function(model) {
+      var _ref;
+      return _ref = model.id, __indexOf.call(this.indices, _ref) >= 0;
     };
     IndexedSubset.prototype._models = function() {
       return this.parent.filter(__bind(function(obj) {

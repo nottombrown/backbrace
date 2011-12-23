@@ -43,6 +43,7 @@
         weight: Math.floor(Math.random() * 35) + 5
       });
     }
+    exampleListView.render();
     $('#filter-a').click(function() {
       visibleWidgets.filterfn = function(widget) {
         return widget.get('weight') > 10;

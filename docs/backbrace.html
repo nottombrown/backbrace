@@ -163,10 +163,15 @@ model.  Changes to the property will trigger a <code>reset</code> event (via
       <span class="vi">@indices = </span><span class="nx">options</span><span class="o">?</span><span class="p">.</span><span class="nx">indices</span>
       <span class="k">if</span> <span class="o">not</span> <span class="nx">@indices</span><span class="o">?</span>
         <span class="k">throw</span> <span class="s1">&#39;Required option: indices (if object, property not provided).&#39;</span>
+
+    <span class="vi">@_bindings = </span><span class="p">{}</span>
+    <span class="vi">@models = </span><span class="p">[]</span>
+
     <span class="nx">@_bind</span><span class="p">()</span>
     <span class="nx">@_reset</span><span class="p">()</span>
-  <span class="nv">filterfn: </span><span class="nf">(id) -&gt;</span>
-    <span class="k">return</span> <span class="nx">id</span> <span class="k">in</span> <span class="nx">@indices</span>
+    <span class="nx">@initialize</span><span class="p">(</span><span class="nx">@options</span><span class="p">)</span>
+  <span class="nv">filterfn: </span><span class="nf">(model) -&gt;</span>
+    <span class="k">return</span> <span class="nx">model</span><span class="p">.</span><span class="nx">id</span> <span class="k">in</span> <span class="nx">@indices</span>
   <span class="nv">_models: </span><span class="o">-&gt;</span>
     <span class="k">return</span> <span class="nx">@parent</span><span class="p">.</span><span class="nx">filter</span> <span class="p">(</span><span class="nx">obj</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="k">return</span> <span class="nx">obj</span><span class="p">.</span><span class="nx">id</span> <span class="k">in</span> <span class="nx">@indices</span>
 
