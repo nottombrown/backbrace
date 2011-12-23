@@ -55,7 +55,6 @@ $ ->
     equal fixt.parent.length, 4
     equal fixt.subset.length, 3
 
-
   module 'IndexedSubset'
 
   buildIndexedSubsetFixture = ->
@@ -65,16 +64,13 @@ $ ->
       {id: 2, foo: 'b'}
       {id: 3, foo: 'a'}
       ]
-
-    indexObject = Backbone.Model
+    indexObject = new Backbone.Model
       importantModels: [1, 2]
       otherModels: [3]
-
     TestSubset = new Backbrace.IndexedSubset
       parent: BaseSet
       object: indexObject
       property: "importantModels"
-    
     return {
       parent: BaseSet
       subset: TestSubset

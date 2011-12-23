@@ -115,7 +115,7 @@
           foo: 'a'
         }
       ]);
-      indexObject = Backbone.Model({
+      indexObject = new Backbone.Model({
         importantModels: [1, 2],
         otherModels: [3]
       });

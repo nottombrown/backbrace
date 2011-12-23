@@ -42,6 +42,7 @@
       collection: visibleWidgets,
       el: $('#widget-list')
     });
+    exampleListView.render();
     $('#filter-a').click(function() {
       window.visibleWidgets.indices = [6, 15];
       return visibleWidgets.update();
