@@ -1,8 +1,8 @@
 (function() {
   $(function() {
-    var build_fixture;
+    var buildFixture, buildIndexedSubsetFixture;
     module('Subset');
-    build_fixture = function() {
+    buildFixture = function() {
       var BaseSet, TestSubset;
       BaseSet = new Backbone.Collection;
       BaseSet.reset([
@@ -30,13 +30,13 @@
     };
     test('Construction', function() {
       var fixt;
-      fixt = build_fixture();
+      fixt = buildFixture();
       equal(fixt.parent.length, 3);
       return equal(fixt.subset.length, 2);
     });
     test('Change event propagation', function() {
       var fixt;
-      fixt = build_fixture();
+      fixt = buildFixture();
       fixt.subset.bind('change', function() {
         return ok(true);
       });
@@ -50,7 +50,7 @@
     });
     test('Custom event propagation from model', function() {
       var fixt;
-      fixt = build_fixture();
+      fixt = buildFixture();
       fixt.subset.bind('whizbang', function() {
         return ok(true);
       });
@@ -60,7 +60,7 @@
     });
     test('Add event propagation', function() {
       var fixt;
-      fixt = build_fixture();
+      fixt = buildFixture();
       fixt.subset.bind('add', function() {
         return ok(true);
       });
@@ -76,7 +76,7 @@
     });
     test('Change event propagation after add', function() {
       var fixt;
-      fixt = build_fixture();
+      fixt = buildFixture();
       fixt.subset.bind('change', function() {
         return ok(true);
       });
@@ -89,15 +89,52 @@
       });
       return expect(1);
     });
-    return test('Membership updating after add', function() {
+    test('Membership updating after add', function() {
       var fixt;
-      fixt = build_fixture();
+      fixt = buildFixture();
       fixt.parent.add({
         id: 4,
         foo: 'a'
       });
       equal(fixt.parent.length, 4);
       return equal(fixt.subset.length, 3);
+    });
+    module('IndexedSubset');
+    buildIndexedSubsetFixture = function() {
+      var BaseSet, TestSubset, indexObject;
+      BaseSet = new Backbone.Collection;
+      BaseSet.reset([
+        {
+          id: 1,
+          foo: 'a'
+        }, {
+          id: 2,
+          foo: 'b'
+        }, {
+          id: 3,
+          foo: 'a'
+        }
+      ]);
+      indexObject = Backbone.Model({
+        importantModels: [1, 2],
+        otherModels: [3]
+      });
+      TestSubset = new Backbrace.IndexedSubset({
+        parent: BaseSet,
+        object: indexObject,
+        property: "importantModels"
+      });
+      return {
+        parent: BaseSet,
+        subset: TestSubset,
+        indexObject: indexObject
+      };
+    };
+    return test('Construction', function() {
+      var fixt;
+      fixt = buildIndexedSubsetFixture();
+      equal(fixt.parent.length, 3);
+      return equal(fixt.subset.length, 2);
     });
   });
 }).call(this);
