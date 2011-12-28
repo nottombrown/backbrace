@@ -259,11 +259,15 @@ class window.Backbrace.ListView extends Backbone.View
   collection: null
   itemView: null
   filter: null
+  itemClass: "bb-list-item"
   initialize: (options) ->
     @autoBind()
     @el = $(@el)
     @itemView = options.itemView
     @filter = options.filter ? (model) -> true
+
+    if options.itemClass?
+        @itemClass = options.itemClass
 
     if !(typeof(@filter) == 'function')
       throw 'filter: Must be function'
@@ -281,12 +285,12 @@ class window.Backbrace.ListView extends Backbone.View
   onCollectionChange: ->
     @render()
   render: ->
-    @el.children(".bb-list-item").remove()
+    @el.children(".#{@itemClass}").remove()
     _.each(@collection.filter(@filter), @_addItem)
     return this
   _addItem: (model) ->
     model.view = new @itemView({model: model})
-    @el.append($(model.view.render().el).addClass("bb-list-item"))
+    @el.append($(model.view.render().el).addClass(@itemClass))
 
 # Takes `views`, an object mapping tab IDs to view classes, and
 # `defaultView`, one of those tab IDs.  The `TabPaneView` will create
