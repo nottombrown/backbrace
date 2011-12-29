@@ -272,9 +272,12 @@ class window.Backbrace.ListView extends Backbone.View
 
     @collection = options.collection
     @collection.bind('add', @onCollectionAdd)
+    @collection.bind('remove', @onCollectionRemove)
     @collection.bind('reset', @onCollectionReset)
     @collection.bind('change', @onCollectionChange)
   onCollectionAdd: (model) ->
+    @render()
+  onCollectionRemove: (model) ->
     @render()
   onCollectionReset: ->
     @render()

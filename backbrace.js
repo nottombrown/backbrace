@@ -311,10 +311,14 @@
       }
       this.collection = options.collection;
       this.collection.bind('add', this.onCollectionAdd);
+      this.collection.bind('remove', this.onCollectionRemove);
       this.collection.bind('reset', this.onCollectionReset);
       return this.collection.bind('change', this.onCollectionChange);
     };
     ListView.prototype.onCollectionAdd = function(model) {
+      return this.render();
+    };
+    ListView.prototype.onCollectionRemove = function(model) {
       return this.render();
     };
     ListView.prototype.onCollectionReset = function() {
