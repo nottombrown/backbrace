@@ -295,6 +295,7 @@
     ListView.prototype.collection = null;
     ListView.prototype.itemView = null;
     ListView.prototype.filter = null;
+    ListView.prototype.itemClass = "bb-list-item";
     ListView.prototype.initialize = function(options) {
       var _ref;
       this.autoBind();
@@ -303,6 +304,9 @@
       this.filter = (_ref = options.filter) != null ? _ref : function(model) {
         return true;
       };
+      if (options.itemClass != null) {
+        this.itemClass = options.itemClass;
+      }
       if (!(typeof this.filter === 'function')) {
         throw 'filter: Must be function';
       }
@@ -328,7 +332,7 @@
       return this.render();
     };
     ListView.prototype.render = function() {
-      this.el.children(".bb-list-item").remove();
+      this.el.children("." + this.itemClass).remove();
       _.each(this.collection.filter(this.filter), this._addItem);
       return this;
     };
@@ -336,7 +340,7 @@
       model.view = new this.itemView({
         model: model
       });
-      return this.el.append($(model.view.render().el).addClass("bb-list-item"));
+      return this.el.append($(model.view.render().el).addClass(this.itemClass));
     };
     return ListView;
   })();

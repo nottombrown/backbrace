@@ -226,11 +226,15 @@ be shown in the list.  The new way of doing this is with Subset.</p>            
   <span class="nv">collection: </span><span class="kc">null</span>
   <span class="nv">itemView: </span><span class="kc">null</span>
   <span class="nv">filter: </span><span class="kc">null</span>
+  <span class="nv">itemClass: </span><span class="s2">&quot;bb-list-item&quot;</span>
   <span class="nv">initialize: </span><span class="nf">(options) -&gt;</span>
     <span class="nx">@autoBind</span><span class="p">()</span>
     <span class="vi">@el = </span><span class="nx">$</span><span class="p">(</span><span class="nx">@el</span><span class="p">)</span>
     <span class="vi">@itemView = </span><span class="nx">options</span><span class="p">.</span><span class="nx">itemView</span>
     <span class="vi">@filter = </span><span class="nx">options</span><span class="p">.</span><span class="nx">filter</span> <span class="o">?</span> <span class="nf">(model) -&gt;</span> <span class="kc">true</span>
+
+    <span class="k">if</span> <span class="nx">options</span><span class="p">.</span><span class="nx">itemClass</span><span class="o">?</span>
+        <span class="vi">@itemClass = </span><span class="nx">options</span><span class="p">.</span><span class="nx">itemClass</span>
 
     <span class="k">if</span> <span class="o">!</span><span class="p">(</span><span class="k">typeof</span><span class="p">(</span><span class="nx">@filter</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;function&#39;</span><span class="p">)</span>
       <span class="k">throw</span> <span class="s1">&#39;filter: Must be function&#39;</span>
@@ -251,12 +255,12 @@ be shown in the list.  The new way of doing this is with Subset.</p>            
   <span class="nv">onCollectionChange: </span><span class="o">-&gt;</span>
     <span class="nx">@render</span><span class="p">()</span>
   <span class="nv">render: </span><span class="o">-&gt;</span>
-    <span class="nx">@el</span><span class="p">.</span><span class="nx">children</span><span class="p">(</span><span class="s2">&quot;.bb-list-item&quot;</span><span class="p">).</span><span class="nx">remove</span><span class="p">()</span>
+    <span class="nx">@el</span><span class="p">.</span><span class="nx">children</span><span class="p">(</span><span class="s2">&quot;.#{@itemClass}&quot;</span><span class="p">).</span><span class="nx">remove</span><span class="p">()</span>
     <span class="nx">_</span><span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="nx">@collection</span><span class="p">.</span><span class="nx">filter</span><span class="p">(</span><span class="nx">@filter</span><span class="p">),</span> <span class="nx">@_addItem</span><span class="p">)</span>
     <span class="k">return</span> <span class="k">this</span>
   <span class="nv">_addItem: </span><span class="nf">(model) -&gt;</span>
     <span class="nv">model.view = </span><span class="k">new</span> <span class="nx">@itemView</span><span class="p">({</span><span class="nv">model: </span><span class="nx">model</span><span class="p">})</span>
-    <span class="nx">@el</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="nx">$</span><span class="p">(</span><span class="nx">model</span><span class="p">.</span><span class="nx">view</span><span class="p">.</span><span class="nx">render</span><span class="p">().</span><span class="nx">el</span><span class="p">).</span><span class="nx">addClass</span><span class="p">(</span><span class="s2">&quot;bb-list-item&quot;</span><span class="p">))</span></pre></div>             </td>           </tr>                               <tr id="section-15">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-15">&#182;</a>               </div>               <p>Takes <code>views</code>, an object mapping tab IDs to view classes, and
+    <span class="nx">@el</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="nx">$</span><span class="p">(</span><span class="nx">model</span><span class="p">.</span><span class="nx">view</span><span class="p">.</span><span class="nx">render</span><span class="p">().</span><span class="nx">el</span><span class="p">).</span><span class="nx">addClass</span><span class="p">(</span><span class="nx">@itemClass</span><span class="p">))</span></pre></div>             </td>           </tr>                               <tr id="section-15">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-15">&#182;</a>               </div>               <p>Takes <code>views</code>, an object mapping tab IDs to view classes, and
 <code>defaultView</code>, one of those tab IDs.  The <code>TabPaneView</code> will create
 and render an instance of the corresponding view class.  When you
 call <code>onTabChange</code> with a new tab ID, it will destroy the old markup
