@@ -340,7 +340,8 @@
       model.view = new this.itemView({
         model: model
       });
-      return this.el.append($(model.view.render().el).addClass(this.itemClass));
+      this.el.append($(model.view.render().el).addClass(this.itemClass));
+      return model.view.trigger('ready');
     };
     return ListView;
   })();

@@ -294,6 +294,7 @@ class window.Backbrace.ListView extends Backbone.View
   _addItem: (model) ->
     model.view = new @itemView({model: model})
     @el.append($(model.view.render().el).addClass(@itemClass))
+    model.view.trigger 'ready' # Let the view know it has been added to the DOM.
 
 # Takes `views`, an object mapping tab IDs to view classes, and
 # `defaultView`, one of those tab IDs.  The `TabPaneView` will create
